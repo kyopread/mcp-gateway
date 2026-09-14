@@ -1,0 +1,24 @@
+{
+  "port": 3000,
+  "timeoutMs": 30000,
+  "servers": {
+    "alpha": {
+      "transport": "stdio",
+      "command": "node",
+      "args": ["examples/demo-server.mjs", "alpha"]
+    },
+    "beta": {
+      "transport": "stdio",
+      "command": "node",
+      "args": ["examples/demo-server.mjs", "beta"]
+    }
+  },
+  "mode": "development",
+  "auth": {
+    "mode": "disabled"
+  },
+  "console": {
+    "enabled": true,
+    "databasePath": "data/demo.sqlite"
+  }
+}

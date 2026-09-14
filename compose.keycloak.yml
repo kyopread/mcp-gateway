@@ -1,0 +1,20 @@
+# Local integration environment only; production Keycloak is deployed separately.
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.7.3
+    command: ['start-dev', '--import-realm']
+    ports:
+      - '127.0.0.1:8080:8080'
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:?Set KEYCLOAK_ADMIN_PASSWORD}
+      GATEWAY_SMOKE_CLIENT_SECRET: ${GATEWAY_SMOKE_CLIENT_SECRET:?Set GATEWAY_SMOKE_CLIENT_SECRET}
+      KEYCLOAK_DIRECTORY_SECRET: ${KEYCLOAK_DIRECTORY_SECRET:?Set KEYCLOAK_DIRECTORY_SECRET}
+      KEYCLOAK_CONSOLE_PASSWORD: ${KEYCLOAK_CONSOLE_PASSWORD:?Set KEYCLOAK_CONSOLE_PASSWORD}
+      KC_HOSTNAME: http://127.0.0.1:8080
+      KC_HEALTH_ENABLED: 'true'
+    volumes:
+      - ./deploy/keycloak:/opt/keycloak/data/import:ro
+      - keycloak-dev-data:/opt/keycloak/data
+volumes:
+  keycloak-dev-data:

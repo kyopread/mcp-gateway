@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.env
+mcp-gateway.local.json
+*.log
+.env.*
+!.env.example
+*.local.json
+.DS_Store
+data/
+*.sqlite*
+playwright-report/
+test-results/
+artifacts/

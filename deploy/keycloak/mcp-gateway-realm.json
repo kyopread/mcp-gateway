@@ -1,0 +1,204 @@
+{
+  "realm": "mcp-gateway",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "accessTokenLifespan": 300,
+  "roles": {
+    "client": {
+      "mcp-gateway": [
+        {
+          "name": "reader"
+        },
+        {
+          "name": "admin"
+        },
+        {
+          "name": "gateway-admin"
+        }
+      ]
+    }
+  },
+  "clientScopes": [
+    {
+      "name": "mcp:access",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true",
+        "display.on.consent.screen": "true"
+      },
+      "protocolMappers": [
+        {
+          "name": "gateway-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "http://127.0.0.1:3000/mcp",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        },
+        {
+          "name": "gateway-client-roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-client-role-mapper",
+          "config": {
+            "usermodel.clientRoleMapping.clientId": "mcp-gateway",
+            "claim.name": "resource_access.mcp-gateway.roles",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "userinfo.token.claim": "false"
+          }
+        },
+        {
+          "name": "gateway-preferred_username",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "config": {
+            "user.attribute": "username",
+            "claim.name": "preferred_username",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "gateway-email",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-property-mapper",
+          "config": {
+            "user.attribute": "email",
+            "claim.name": "email",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "name": "gateway-directory-access",
+      "protocol": "openid-connect",
+      "attributes": {
+        "include.in.token.scope": "true"
+      },
+      "protocolMappers": [
+        {
+          "name": "directory-realm-management-roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-client-role-mapper",
+          "config": {
+            "usermodel.clientRoleMapping.clientId": "realm-management",
+            "claim.name": "resource_access.realm-management.roles",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "mcp-gateway",
+      "name": "MCP Gateway resource",
+      "protocol": "openid-connect",
+      "bearerOnly": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false
+    },
+    {
+      "clientId": "mcp-local-client",
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": ["http://127.0.0.1:3001/callback"],
+      "webOrigins": ["http://127.0.0.1:3001"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "defaultClientScopes": ["mcp:access"],
+      "fullScopeAllowed": true
+    },
+    {
+      "clientId": "gateway-smoke",
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "${GATEWAY_SMOKE_CLIENT_SECRET}",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "defaultClientScopes": ["mcp:access"],
+      "fullScopeAllowed": true
+    },
+    {
+      "clientId": "mcp-console",
+      "name": "MCP Gateway Web Console",
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": ["http://127.0.0.1:3000/auth/callback"],
+      "webOrigins": ["http://127.0.0.1:3000"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://127.0.0.1:3000/"
+      },
+      "defaultClientScopes": ["mcp:access"],
+      "fullScopeAllowed": true
+    },
+    {
+      "clientId": "gateway-directory",
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "${KEYCLOAK_DIRECTORY_SECRET}",
+      "serviceAccountsEnabled": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "defaultClientScopes": ["gateway-directory-access"],
+      "fullScopeAllowed": true
+    }
+  ],
+  "users": [
+    {
+      "username": "service-account-gateway-smoke",
+      "enabled": true,
+      "serviceAccountClientId": "gateway-smoke",
+      "clientRoles": {
+        "mcp-gateway": ["reader"]
+      }
+    },
+    {
+      "username": "service-account-gateway-directory",
+      "enabled": true,
+      "serviceAccountClientId": "gateway-directory",
+      "clientRoles": {
+        "realm-management": ["view-users", "query-users"]
+      }
+    },
+    {
+      "username": "console-admin",
+      "enabled": true,
+      "email": "admin@example.test",
+      "emailVerified": true,
+      "firstName": "Console",
+      "lastName": "Admin",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${KEYCLOAK_CONSOLE_PASSWORD}",
+          "temporary": true
+        }
+      ],
+      "clientRoles": {
+        "mcp-gateway": ["gateway-admin"]
+      }
+    }
+  ]
+}

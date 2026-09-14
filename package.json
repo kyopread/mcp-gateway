@@ -1,0 +1,48 @@
+{
+  "name": "mcp-gateway",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "npm run build:web && tsx watch --env-file-if-exists=.env src/index.ts",
+    "build": "npm run build:server && npm run build:web",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.web.json && tsc -p tsconfig.test.json",
+    "test": "tsx --test test/*.test.ts",
+    "dev:demo": "npm run build:web && MCP_GATEWAY_CONFIG=examples/mcp-gateway.demo.json tsx watch src/index.ts",
+    "check": "npm run typecheck && npm test && npm run build",
+    "smoke:keycloak": "node --env-file=.env examples/keycloak-smoke.mjs",
+    "build:server": "tsc",
+    "build:web": "vite build",
+    "test:ui": "playwright test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0",
+    "jose": "^6.2.12",
+    "keycloak-js": "^26.2.4",
+    "lucide-react": "^1.46.0",
+    "pino": "^10.3.1",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/express": "^5.0.6",
+    "@types/node": "^26.5.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "prettier": "^3.9.6",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0"
+  }
+}

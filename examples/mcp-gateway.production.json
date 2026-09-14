@@ -1,0 +1,60 @@
+{
+  "mode": "production",
+  "host": "0.0.0.0",
+  "port": 3000,
+  "publicUrl": "https://gateway.example.com/mcp",
+  "timeoutMs": 30000,
+  "maxConcurrentRequests": 50,
+  "rateLimitPerMinute": 120,
+  "auth": {
+    "mode": "keycloak",
+    "issuer": "https://sso.example.com/realms/mcp-gateway",
+    "clientId": "mcp-gateway",
+    "requiredScopes": ["mcp:access"]
+  },
+  "servers": {
+    "vendor": {
+      "transport": "http",
+      "url": "https://mcp.vendor.example/mcp",
+      "auth": {
+        "type": "apiKey",
+        "header": "X-API-Key",
+        "valueEnv": "VENDOR_MCP_API_KEY"
+      },
+      "policy": {
+        "anyRole": ["client:reader", "client:admin"]
+      },
+      "tools": {
+        "delete_record": {
+          "anyRole": ["client:admin"],
+          "allScopes": ["records:delete"]
+        }
+      }
+    },
+    "internal": {
+      "transport": "http",
+      "url": "https://internal-mcp.example.com/mcp",
+      "auth": {
+        "type": "clientCredentials",
+        "tokenUrl": "https://sso.example.com/realms/mcp-gateway/protocol/openid-connect/token",
+        "clientId": "gateway-to-internal-mcp",
+        "clientSecretEnv": "INTERNAL_MCP_CLIENT_SECRET",
+        "scopes": ["tools:call"],
+        "resource": "https://internal-mcp.example.com/mcp"
+      },
+      "policy": {
+        "anyRole": ["client:admin"]
+      }
+    }
+  },
+  "console": {
+    "enabled": true,
+    "databasePath": "data/gateway.sqlite",
+    "credentialEnvs": ["VENDOR_MCP_API_KEY", "INTERNAL_MCP_CLIENT_SECRET"],
+    "allowedUpstreamOrigins": [
+      "https://mcp.vendor.example",
+      "https://internal-mcp.example.com",
+      "https://sso.example.com"
+    ]
+  }
+}
