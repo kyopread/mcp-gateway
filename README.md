@@ -171,6 +171,7 @@ Gateway 포트는 TLS reverse proxy 뒤의 사설 네트워크에 둡니다.
 로컬 Keycloak Compose의 `start-dev`는 운영 배포용이 아닙니다.
 
 운영 제한, 감사 기록, 상태 점검은 [구조와 운영 범위](docs/architecture.md)에 정리했습니다.
+다음 구현·운영 순서는 [로드맵](docs/roadmap.md)에 정리했습니다.
 
 ## 검증 명령
 
