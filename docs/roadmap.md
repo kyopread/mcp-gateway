@@ -14,9 +14,11 @@
 
 완료 기준: `npm run check`, `npm run test:ui`, `npm audit --omit=dev --audit-level=high` 통과.
 
-## 2단계 — 운영 배포 검증
+## 진행 중: 2단계 — 운영 배포 검증
 
 목표는 실제 Keycloak과 한 개 외부 MCP를 연결한 단일 인스턴스 운영입니다.
+
+진행 내용: SQLite online 백업·새 경로 복구 명령과 권한 복구 테스트를 추가했습니다. 실제 Keycloak을 사용하는 로컬 검증 스크립트와 실행 절차는 [운영 가이드](operations.md)에 있습니다. 운영 도메인·TLS와 실제 사용자 로그인 검증은 아직 남아 있습니다.
 
 - 운영 도메인과 TLS reverse proxy 구성
 - Keycloak realm/client/scope/audience를 운영 주소로 변경

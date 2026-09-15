@@ -172,6 +172,7 @@ Gateway 포트는 TLS reverse proxy 뒤의 사설 네트워크에 둡니다.
 
 운영 제한, 감사 기록, 상태 점검은 [구조와 운영 범위](docs/architecture.md)에 정리했습니다.
 다음 구현·운영 순서는 [로드맵](docs/roadmap.md)에 정리했습니다.
+SQLite 백업·복구 명령과 Docker 없는 실제 Keycloak 검증은 [운영 가이드](docs/operations.md)를 참고하세요.
 
 ## 검증 명령
 
