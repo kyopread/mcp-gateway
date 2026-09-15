@@ -49,6 +49,10 @@
   },
   "console": {
     "enabled": true,
+    "directory": {
+      "clientId": "gateway-directory",
+      "clientSecretEnv": "KEYCLOAK_DIRECTORY_SECRET"
+    },
     "databasePath": "data/gateway.sqlite",
     "credentialEnvs": ["VENDOR_MCP_API_KEY", "INTERNAL_MCP_CLIENT_SECRET"],
     "allowedUpstreamOrigins": [

@@ -1,6 +1,6 @@
 # Keycloak 연동
 
-`mcp-gateway.json`의 기본 issuer는 `http://127.0.0.1:8080/realms/mcp-gateway`입니다.
+`config/local.json`의 기본 issuer는 `http://127.0.0.1:8080/realms/mcp-gateway`입니다.
 Gateway는 `${issuer}/protocol/openid-connect/certs`의 JWKS를 이용합니다.
 서명 기본 알고리즘은 RS256이며 issuer, audience, exp, iat, sub, nbf와 `typ=Bearer`를 검사합니다.
 ID token은 MCP/API 인증에 사용할 수 없습니다. 시간 오차는 5초까지 허용합니다.

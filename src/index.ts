@@ -2,7 +2,7 @@ import { loadConfig } from './config.js';
 import { createGateway } from './gateway.js';
 
 try {
-  const config = await loadConfig(process.env.MCP_GATEWAY_CONFIG ?? 'mcp-gateway.json');
+  const config = await loadConfig(process.env.MCP_GATEWAY_CONFIG ?? 'config/local.json');
   const gateway = await createGateway(config);
   const http = gateway.app.listen(config.port, config.host, () => {
     console.log(

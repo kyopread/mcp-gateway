@@ -1,9 +1,15 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 
-const issuer = process.env.KEYCLOAK_ISSUER ?? 'http://127.0.0.1:8080/realms/mcp-gateway';
-const gatewayUrl = process.env.MCP_GATEWAY_URL ?? 'http://127.0.0.1:3000/mcp';
+const config = JSON.parse(
+  await readFile(process.env.MCP_GATEWAY_CONFIG ?? 'config/local.json', 'utf8'),
+);
+if (config.auth.mode !== 'keycloak')
+  throw new Error('Smoke check requires Keycloak authentication');
+const issuer = config.auth.issuer;
+const gatewayUrl = config.publicUrl;
 const secret = process.env.GATEWAY_SMOKE_CLIENT_SECRET;
 if (!secret) throw new Error('Set GATEWAY_SMOKE_CLIENT_SECRET');
 const response = await fetch(`${issuer}/protocol/openid-connect/token`, {

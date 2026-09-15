@@ -20,6 +20,8 @@
 
 진행 내용: SQLite online 백업·새 경로 복구 명령과 권한 복구 테스트를 추가했습니다. 실제 Keycloak을 사용하는 로컬 검증 스크립트와 실행 절차는 [운영 가이드](operations.md)에 있습니다. 운영 도메인·TLS와 실제 사용자 로그인 검증은 아직 남아 있습니다.
 
+환경 설정은 `config/local.json`·`config/production.json`과 환경 변수의 비밀값으로 분리했습니다. `.env`는 로컬 실행에서 사용하고 운영에서는 배포 환경에서 비밀값을 주입합니다.
+
 - 운영 도메인과 TLS reverse proxy 구성
 - Keycloak realm/client/scope/audience를 운영 주소로 변경
 - 콘솔 관리자와 일반 사용자 계정으로 로그인·로그아웃 검증

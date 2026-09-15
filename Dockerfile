@@ -9,7 +9,7 @@ RUN npm run build
 
 FROM node:22-bookworm-slim AS runtime
 ENV NODE_ENV=production
-ENV MCP_GATEWAY_CONFIG=/app/config/mcp-gateway.json
+ENV MCP_GATEWAY_CONFIG=/app/config/production.json
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force

@@ -119,7 +119,7 @@ MCP URL과 OAuth token URL의 origin 모두 등록해야 합니다.
 }
 ```
 
-전체 운영 예제는 [examples/mcp-gateway.production.json](examples/mcp-gateway.production.json)입니다.
+전체 운영 설정 템플릿은 [config/production.json](config/production.json)입니다.
 웹 등록은 HTTP MCP만 지원합니다. 로컬 stdio 명령은 설정 파일에서 등록하며,
 웹 화면에서 임의의 셸 명령을 만들 수 없습니다. 파일 서버의 접근 권한은 웹에서도 관리합니다.
 
@@ -141,6 +141,24 @@ JWT의 `aud`는 `publicUrl`과 정확히 같아야 합니다.
 
 ## 저장·배포
 
+환경별 주소·MCP 연결·역할 정책은 JSON, 비밀값은 환경 변수로 관리합니다.
+
+| 파일                     | 용도                                                 |
+| ------------------------ | ---------------------------------------------------- |
+| `config/local.json`      | 기본 로컬 설정, Keycloak 포트 8080·Gateway 포트 3000 |
+| `config/production.json` | 운영 HTTPS 설정 템플릿. 실제 주소로 변경 후 사용     |
+| `.env`                   | 로컬 비밀값과 `MCP_GATEWAY_CONFIG`. Git 제외         |
+| `.env.example`           | 환경 변수 이름과 설명. 비밀값 없음                   |
+
+`npm run dev`와 `npm start`는 `.env`를 읽습니다. 이미 주입된 환경 변수가 `.env`보다 우선하며,
+`MCP_GATEWAY_CONFIG`가 없으면 `config/local.json`을 사용합니다. 경로는 프로젝트 실행 디렉터리 기준입니다.
+JSON 파일은 병합하지 않고 선택한 한 파일만 읽습니다. 설정 변경 후 Gateway를 재시작하세요.
+기존 루트 `mcp-gateway.json`은 `config/local.json`으로 이동했습니다. 이전 경로를 지정한 실행 설정도 변경하세요.
+
+웹에서 관리하는 사용자·그룹·접근 권한과 추가 MCP는 SQLite에 저장합니다.
+파일에 정의한 MCP 연결과 역할 정책은 시작할 때 다시 적용됩니다.
+JSON에는 secret 값 대신 `clientSecretEnv`, `valueEnv`, `tokenEnv`, `envFrom`으로 환경 변수 이름을 참조하세요.
+
 콘솔 데이터는 SQLite의 서버 연결 정보·사용자·그룹·권한·감사 테이블에 보관합니다.
 운영 데이터 기본 경로는 `data/gateway.sqlite`, 데모는 `data/demo.sqlite`입니다.
 **현재 배포 단위는 단일 Gateway 인스턴스입니다.** 여러 replica의 정책·catalog 동기화는
@@ -148,10 +166,13 @@ JWT의 `aud`는 `publicUrl`과 정확히 같아야 합니다.
 
 ```sh
 npm run build
-NODE_ENV=production MCP_GATEWAY_CONFIG=mcp-gateway.local.json node --env-file=.env dist/index.js
+NODE_ENV=production MCP_GATEWAY_CONFIG=config/production.json node dist/index.js
 ```
 
-`mcp-gateway.local.json`은 운영 예제를 복사해 실제 URL과 자격 증명 참조를 설정합니다.
+`config/production.json`의 예시 Gateway·Keycloak·upstream 주소를 실제 주소로 변경하고,
+필요한 비밀값은 배포 환경에서 주입합니다. 위 운영 명령은 `.env`를 읽지 않습니다.
+개인별 설정 파일은 `config/production.local.json`처럼 `*.local.json`으로 만들어 Git에서 제외할 수 있습니다.
+도메인이 아직 없으면 `config/local.json`으로 개발하면 됩니다.
 운영 모드는 Keycloak 인증과 외부 HTTPS URL을 강제합니다.
 `NODE_ENV=production`에서 인증 없는 개발 설정은 시작되지 않습니다.
 
@@ -159,7 +180,7 @@ NODE_ENV=production MCP_GATEWAY_CONFIG=mcp-gateway.local.json node --env-file=.e
 docker build -t mcp-gateway:0.2.0 .
 docker run --rm --read-only --cap-drop=ALL --security-opt=no-new-privileges \
   -p 127.0.0.1:3000:3000 \
-  -v "$PWD/mcp-gateway.local.json:/app/config/mcp-gateway.json:ro" \
+  -v "$PWD/config/production.json:/app/config/production.json:ro" \
   -v mcp-gateway-data:/app/data \
   -e VENDOR_MCP_API_KEY -e INTERNAL_MCP_CLIENT_SECRET -e KEYCLOAK_DIRECTORY_SECRET \
   mcp-gateway:0.2.0

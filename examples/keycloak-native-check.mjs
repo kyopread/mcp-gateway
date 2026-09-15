@@ -69,7 +69,7 @@ try {
     '--import-realm',
   ]);
   await ready(`${env.KEYCLOAK_ISSUER}/.well-known/openid-configuration`, keycloak);
-  const config = JSON.parse(await readFile('mcp-gateway.json', 'utf8'));
+  const config = JSON.parse(await readFile('config/local.json', 'utf8'));
   config.port = 3200;
   config.publicUrl = env.MCP_GATEWAY_URL;
   config.auth.issuer = env.KEYCLOAK_ISSUER;
@@ -78,7 +78,9 @@ try {
   await writeFile(configPath, JSON.stringify(config), { mode: 0o600 });
   const gateway = start(process.execPath, ['dist/index.js'], { MCP_GATEWAY_CONFIG: configPath });
   await ready('http://127.0.0.1:3200/ready', gateway);
-  const smoke = start(process.execPath, ['examples/keycloak-smoke.mjs']);
+  const smoke = start(process.execPath, ['examples/keycloak-smoke.mjs'], {
+    MCP_GATEWAY_CONFIG: configPath,
+  });
   await new Promise((resolve, reject) => {
     smoke.on('error', reject);
     smoke.on('exit', (code) =>
